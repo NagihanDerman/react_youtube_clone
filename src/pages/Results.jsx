@@ -1,0 +1,49 @@
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import api from "../utils/api";
+
+import VideoCard from "../components/VideoCard";
+import Undefined from "./Undefined";
+import SideBar from "../components/Sidebar";
+
+const Results = () => {
+  const [videos, setVideos] = useState([]);
+
+  // search params kurulum
+  const [searchParams] = useSearchParams();
+
+  // 1) urlden aratılan terimi al
+  const searchTerm = searchParams.get("search_query");
+
+  // 2) api'dan aratılan terime uygun verileri al
+  useEffect(() => {
+    api
+      .get(`/search?query=${searchTerm}`)
+      .then((res) => setVideos(res.data.data));
+  }, [searchTerm]);
+
+  if (videos.length === 0) {
+    return <Undefined />;
+  }
+
+  return (
+    <div className="flex gap-3">
+      <SideBar />
+
+      <div className="mx-auto overflow-auto w-full h-[90vh] p-4">
+        <h2 className="text-xl mb-5">
+          <span className="font-bold">{searchTerm}</span>
+          <span> résultats pour</span>
+        </h2>
+
+        <div className="wrapper flex flex-col gap-5 justify-center ">
+          {videos.map((item, index) => (
+            <VideoCard isRow={true} key={index} video={item} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Results;
