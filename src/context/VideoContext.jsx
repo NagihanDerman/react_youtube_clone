@@ -1,63 +1,43 @@
 import { createContext, useEffect, useState } from "react";
 import { categories } from "../constants";
-import api from "../utils/api";
+import { getData } from "../helpers/getData";
 
-//* 1.adım: Context yapısının temelini oluşturduk
+//1 contexte yapisinin temeli ve  abone olma
 export const VideoContext = createContext();
 
-//* 2.adım: Sağlayıcı bileşeni oluşturduk
+//2 hangi categorinin secilecegi saglayici bileseni olusturma
 export const VideoProvider = ({ children }) => {
+  //kapyasıcı bileseni tamamlama
   const [selectedCategory, setSelectedCategory] = useState(categories[0]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [videos, setVideos] = useState();
-  const [error, setError] = useState(null);
+  const [videos, setVideos] = useState(null);
 
+  //kategori her dğiştiğinde api dan verileri al
   useEffect(() => {
-    // seçilen typeı belirle
-    const type = selectedCategory.type;
-    // Seçilen kategorinin type'ı menu ise fonksiyonunu burada durdurur.
-    if (type === "menu") return;
-    // yüklenmeyi true'ya çek
-    setIsLoading(true);
+    //menü type i secildiyse fonksiyonu durdur
+    if (selectedCategory.type === "menu") return;
 
-    // istek atılacak url belirle
+    //önceki kategorinni ver,ilerini temizle
+    setVideos(null);
 
-    const url =
-      type === "home"
-        ? "/home"
-        : type === "trending"
-        ? "/trending"
-        : type === "category"
-        ? `/search?query=${selectedCategory.name}`
-        : "";
-
-    // api isteği at ve durumu state aktar
-    api
-      .get(url)
-      .then((res) => {
-        setVideos(res.data.data);
-        // console.log(res);
-        setError(null);
-
-        // eskiden olan hatları kaldır
-      })
-      .catch((err) => {
-        setError(err);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    //type home ise home a istek at
+    if (selectedCategory.type === "home") {
+      getData("/home").then((res) => setVideos(res.data));
+    }
+    //type trending ise  trending endpointine istek at
+    if (selectedCategory.type === "trending") {
+      getData("/trending").then((res) => setVideos(res.data));
+    }
+    //type i category ise categorye istek at
+    if (selectedCategory.type === "category") {
+      getData(`/search?query=${selectedCategory.name}`).then((res) =>
+        setVideos(res.data)
+      );
+    }
   }, [selectedCategory]);
 
   return (
     <VideoContext.Provider
-      value={{
-        selectedCategory,
-        setSelectedCategory,
-        videos,
-        error,
-        isLoading,
-      }}
+      value={{ selectedCategory, setSelectedCategory, videos }}
     >
       {children}
     </VideoContext.Provider>

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { categories } from "../constants";
-import { VideoContext } from "../context/VideoContext";
+import { VideoContext } from "./../context/videoContext";
 
 const SideBar = () => {
   const { selectedCategory, setSelectedCategory } = useContext(VideoContext);

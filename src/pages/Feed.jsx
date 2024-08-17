@@ -1,22 +1,24 @@
 import { useContext } from "react";
-import SideBar from "./../components/Sidebar";
+import { VideoContext } from "../context/videoContext";
 import VideoCard from "../components/VideoCard";
-import Loader from "../components/Loader";
-import Error from "../components/Error";
-import { VideoContext } from "../context/VideoContext";
+import SideBar from "./../components/Sidebar";
+import Loader from "./../components/Loader";
 
 const Feed = () => {
-  const { videos, error, isLoading } = useContext(VideoContext);
+  const { videos } = useContext(VideoContext);
   return (
-    <div className="flex">
+    <div className="flex ">
       <SideBar />
-      <div className="videos">
-        {isLoading ? (
+      <div className="videos ">
+        {!videos ? (
           <Loader />
-        ) : error ? (
-          <Error message={error} />
         ) : (
-          videos.map((item) => <VideoCard key={item.videoId} video={item} />)
+          videos?.map(
+            (item) =>
+              item.type === "video" && (
+                <VideoCard key={item.videoId} video={item} />
+              )
+          )
         )}
       </div>
     </div>
