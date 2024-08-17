@@ -50,4 +50,4 @@
 
 ## GIF
 
-<img src=""/>
+<img src="./public/youtube.gif"/>
